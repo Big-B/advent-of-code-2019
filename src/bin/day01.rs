@@ -13,4 +13,3 @@ fn main() {
         .sum();
     println!("Full Sum: {}", full_sum);
 }
-
