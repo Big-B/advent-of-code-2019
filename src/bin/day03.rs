@@ -27,7 +27,6 @@ fn wire_path_to_set(path: &Vec<&str>) -> HashMap<(isize, isize), usize> {
     let mut set = HashMap::new();
     let mut x = 0;
     let mut y = 0;
-    let mut first = true;
     let mut steps = 0;
 
     for c in path {
@@ -35,46 +34,42 @@ fn wire_path_to_set(path: &Vec<&str>) -> HashMap<(isize, isize), usize> {
         let mag = mag.parse::<isize>().unwrap();
         match cmd {
             "R" => {
-                for i in x..=(x + mag) {
+                for i in (x + 1)..=(x + mag) {
+                    steps += 1;
                     if !set.contains_key(&(i, y)) {
                         set.insert((i, y), steps);
                     }
-                    steps += 1;
                 }
                 x += mag;
             }
             "L" => {
-                for i in (x - mag)..=x {
+                for i in ((x - mag)..=(x-1)).rev() {
+                    steps += 1;
                     if !set.contains_key(&(i, y)) {
                         set.insert((i, y), steps);
                     }
-                    steps += 1;
                 }
                 x -= mag;
             }
             "U" => {
-                for i in y..=(y + mag) {
+                for i in (y+1)..=(y + mag) {
+                    steps += 1;
                     if !set.contains_key(&(x, i)) {
                         set.insert((x, i), steps);
                     }
-                    steps += 1;
                 }
                 y += mag;
             }
             "D" => {
-                for i in (y - mag)..=y {
+                for i in ((y - mag)..=(y-1)).rev() {
+                    steps += 1;
                     if !set.contains_key(&(x, i)) {
                         set.insert((x, i), steps);
                     }
-                    steps += 1;
                 }
                 y -= mag;
             }
             _ => panic!("Unknown Command!"),
-        }
-        if first {
-            first = false;
-            set.remove(&(0, 0));
         }
     }
     set
