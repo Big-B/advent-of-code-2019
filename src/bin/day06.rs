@@ -30,6 +30,7 @@ fn get_number_of_transfers(
     let mut end = end;
     let mut distance = 0;
 
+    // These two while loops will make sure we start at the same distance from the root
     while map.get(start).unwrap().1.unwrap() > map.get(end).unwrap().1.unwrap() {
         distance += 1;
         start = map.get(start).unwrap().0;
@@ -40,6 +41,9 @@ fn get_number_of_transfers(
         end = map.get(end).unwrap().0;
     }
 
+    // Now that we know we're the same distance away from the root, we can walk down
+    // the orbits on each branch together. Once we get to the common node, we've
+    // found a path.
     while map.get(end).unwrap().0 != map.get(start).unwrap().0 {
         distance += 2;
         start = map.get(start).unwrap().0;
