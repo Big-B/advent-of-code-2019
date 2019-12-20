@@ -16,7 +16,7 @@ fn fix_program(prog: &Vec<isize>) -> isize {
     let mut prog = prog.clone();
     prog[1] = 12;
     prog[2] = 2;
-    run_tape(&mut prog);
+    run_tape(&mut prog, Vec::new());
     prog[0]
 }
 
@@ -26,7 +26,7 @@ fn find_proper_params(prog: &Vec<isize>) -> isize {
             let mut prog = prog.clone();
             prog[1] = i;
             prog[2] = j;
-            run_tape(&mut prog);
+            run_tape(&mut prog, Vec::new());
             if prog[0] == 19690720 {
                 return 100 * i + j;
             }
