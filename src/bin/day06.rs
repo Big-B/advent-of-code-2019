@@ -14,6 +14,39 @@ fn main() {
     }
 
     println!("Num Orbits: {}", get_number_of_orbits(&mut map));
+    println!(
+        "Orbital Transfers: {}",
+        get_number_of_transfers("YOU", "SAN", &map)
+    );
+}
+
+fn get_number_of_transfers(
+    start: &str,
+    end: &str,
+    map: &HashMap<&str, (&str, Option<usize>)>,
+) -> usize {
+
+    let mut start = start;
+    let mut end = end;
+    let mut distance = 0;
+
+    while map.get(start).unwrap().1.unwrap() > map.get(end).unwrap().1.unwrap() {
+        distance += 1;
+        start = map.get(start).unwrap().0;
+    }
+
+    while map.get(end).unwrap().1.unwrap() > map.get(start).unwrap().1.unwrap() {
+        distance += 1;
+        end = map.get(end).unwrap().0;
+    }
+
+    while map.get(end).unwrap().0 != map.get(start).unwrap().0 {
+        distance += 2;
+        start = map.get(start).unwrap().0;
+        end = map.get(end).unwrap().0;
+    }
+
+    distance
 }
 
 fn get_all_planets<'a>(map: &mut HashMap<&'a str, (&'a str, Option<usize>)>) -> Vec<&'a str> {
