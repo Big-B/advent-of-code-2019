@@ -89,7 +89,7 @@ pub fn run_tape(tape: &mut [isize], input: Vec<isize>) -> Vec<isize> {
                 tape[out] = if op1 == op2 { 1 } else { 0 };
                 ip += 4;
             },
-            _ => panic!("Invalid starting value!"),
+            _ => panic!("Invalid OpCode value: {}!", op_code),
         }
     }
 
