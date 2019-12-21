@@ -1,4 +1,5 @@
 use advent_of_code_2019::*;
+use std::sync::mpsc::channel;
 
 fn main() {
     let input: Vec<isize> = get_input()
@@ -13,10 +14,14 @@ fn main() {
 
 fn run_test1(input: &Vec<isize>) -> Vec<isize> {
     let mut prog = input.clone();
-    run_tape(&mut prog, vec![1])
+    let (tx, rx) = channel();
+    tx.send(1).unwrap();
+    run_tape(&mut prog, rx, tx)
 }
 
 fn run_test2(input: &Vec<isize>) -> Vec<isize> {
     let mut prog = input.clone();
-    run_tape(&mut prog, vec![5])
+    let (tx, rx) = channel();
+    tx.send(5).unwrap();
+    run_tape(&mut prog, rx, tx)
 }

@@ -1,5 +1,6 @@
 use std::io;
 use std::io::Read;
+use std::sync::mpsc::{Receiver, Sender};
 
 pub fn get_input() -> String {
     let mut buf = String::new();
@@ -9,10 +10,9 @@ pub fn get_input() -> String {
     buf
 }
 
-pub fn run_tape(tape: &mut [isize], input: Vec<isize>) -> Vec<isize> {
+pub fn run_tape(tape: &mut [isize], input: Receiver<isize>, output: Sender<isize>) -> Vec<isize> {
     let mut ip = 0;
-    let mut output = Vec::new();
-    let mut input = input;
+    let mut output_vec = Vec::new();
     loop {
         let (op_code, first_mode, second_mode, _third_mode) = get_op_code_and_param_mode(tape[ip]);
         match op_code {
@@ -26,7 +26,7 @@ pub fn run_tape(tape: &mut [isize], input: Vec<isize>) -> Vec<isize> {
 
                 tape[out] = op1 + op2;
                 ip += 4;
-            },
+            }
             2 => {
                 // Subtract
                 let op1 = get_val_with_mode(tape, ip + 1, first_mode);
@@ -36,13 +36,13 @@ pub fn run_tape(tape: &mut [isize], input: Vec<isize>) -> Vec<isize> {
 
                 tape[out] = op1 * op2;
                 ip += 4;
-            },
+            }
             3 => {
                 // Input
-                let val = input.pop().unwrap();
+                let val = input.recv().unwrap();
                 tape[tape[ip + 1] as usize] = val;
                 ip += 2;
-            },
+            }
             4 => {
                 // Output
                 let print = if first_mode == 0 {
@@ -50,27 +50,29 @@ pub fn run_tape(tape: &mut [isize], input: Vec<isize>) -> Vec<isize> {
                 } else {
                     tape[ip + 1]
                 };
-                output.push(print);
+
+                // Don't care about this error since we'll still push to the vec
+                // and return that
+                let _ = output.send(print);
+                output_vec.push(print);
                 ip += 2;
-            },
+            }
             5 => {
                 // jump-if-true
-                if get_val_with_mode(tape, ip + 1, first_mode) != 0
-                {
+                if get_val_with_mode(tape, ip + 1, first_mode) != 0 {
                     ip = get_val_with_mode(tape, ip + 2, second_mode) as usize;
                 } else {
                     ip += 3;
                 }
-            },
+            }
             6 => {
                 // jump-if-false
-                if get_val_with_mode(tape, ip + 1, first_mode) == 0
-                {
+                if get_val_with_mode(tape, ip + 1, first_mode) == 0 {
                     ip = get_val_with_mode(tape, ip + 2, second_mode) as usize;
                 } else {
                     ip += 3;
                 }
-            },
+            }
             7 => {
                 // less than
                 let op1 = get_val_with_mode(tape, ip + 1, first_mode);
@@ -79,7 +81,7 @@ pub fn run_tape(tape: &mut [isize], input: Vec<isize>) -> Vec<isize> {
                 let out = tape[ip + 3] as usize;
                 tape[out] = if op1 < op2 { 1 } else { 0 };
                 ip += 4;
-            },
+            }
             8 => {
                 // equals
                 let op1 = get_val_with_mode(tape, ip + 1, first_mode);
@@ -88,12 +90,12 @@ pub fn run_tape(tape: &mut [isize], input: Vec<isize>) -> Vec<isize> {
                 let out = tape[ip + 3] as usize;
                 tape[out] = if op1 == op2 { 1 } else { 0 };
                 ip += 4;
-            },
+            }
             _ => panic!("Invalid OpCode value: {}!", op_code),
         }
     }
 
-    output
+    output_vec
 }
 
 pub fn get_val_with_mode(tape: &[isize], pos: usize, mode: usize) -> isize {
