@@ -9,7 +9,7 @@ fn main() {
         .collect();
 
     println!("Test 1: {:?}", run_test1(&input.clone()));
-    //println!("Test 2: {:?}", run_test2(&input.clone()));
+    println!("Test 2: {:?}", run_test2(&input.clone()));
 }
 
 fn run_test1(input: &Vec<isize>) -> Vec<isize> {
@@ -22,7 +22,7 @@ fn run_test1(input: &Vec<isize>) -> Vec<isize> {
 fn run_test2(input: &Vec<isize>) -> Vec<isize> {
     let mut prog = input.clone();
     let (tx, rx) = channel();
-    tx.send(5).unwrap();
+    tx.send(2).unwrap();
     run_tape(&mut prog, rx, tx)
 }
 
