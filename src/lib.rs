@@ -174,7 +174,6 @@ pub fn get_val_with_mode(
 /// Use the mode to determine which value of the tape to use.
 /// Supported modes:
 /// 0 -> Position - The parameter is given as a position in the tape.
-/// 1 -> Immediate - The parameter is given
 /// 2 -> Relative - The parameter is relative to the relative base
 pub fn insert_val_with_mode(
     tape: &mut HashMap<usize, isize>,
